@@ -1,0 +1,36 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*.local
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.sw?
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional: test coverage reports
+coverage/
+.nyc_output/
+
+# Optional: local data cache (if using frameworks/tools)
+.cache/
