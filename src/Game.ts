@@ -73,7 +73,11 @@ export class Game implements GameState {
     this.turn++;
 
     this.players.forEach(
-      (p) => (p.energy += p.energyGenerated - p.energyDraining)
+      (p) =>
+        (p.energy = Math.min(
+          p.energy + p.energyGenerated - p.energyDraining,
+          50
+        ))
     );
 
     updateUI(this);
