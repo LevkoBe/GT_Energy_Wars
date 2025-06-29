@@ -170,16 +170,25 @@ export class Game implements GameState {
   // Energy
   tryIncreaseNodeEnergy(nodeId: number): boolean {
     const node = this.nodes[nodeId];
-    if (node.isEnergyTower || node.owner === null) return false;
+    if (
+      node.isEnergyTower ||
+      node.owner === null ||
+      node.currentEnergy == node.socialConnections.length
+    )
+      return false;
 
     const tower = this.findPlayerTower(node.owner);
     if (!tower) return false;
 
-    const path = this.findPathToNode(tower.id, nodeId, node.owner);
-    if (!path.length) return false;
+    let path = this.findPathToNode(tower.id, nodeId, node.owner);
+    let bottleneck = this.findBottleneck(path);
 
-    const bottleneck = this.findBottleneck(path);
-    if (bottleneck === null) return false;
+    if (bottleneck === null) {
+      this.recalculateAllFlows(node.owner);
+      path = this.findPathToNode(tower.id, nodeId, node.owner);
+      bottleneck = this.findBottleneck(path);
+      if (bottleneck === null) return false;
+    }
 
     this.increaseFlowAlongPath(path, 1);
     node.currentEnergy = (node.currentEnergy || 0) + 1;
