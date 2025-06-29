@@ -1,7 +1,6 @@
 import { updateUI } from "./ui.js";
 import { draw, getNodeAt } from "./rendering.js";
-import { distance, findPath } from "./algorithms.js";
-import { updatePowerFlow } from "./energy-flow.js";
+import { distance, BFSfindPath } from "./algorithms.js";
 import {
   MIN_POWERLINE_CAPACITY,
   MAX_POWERLINE_CAPACITY,
@@ -32,7 +31,7 @@ function handleNodeClick(game: Game, node: Node, isRightClick: boolean) {
   const player = game.players[game.currentPlayer];
   const towerId = player.towerId;
 
-  const pathExists = findPath(
+  const pathExists = BFSfindPath(
     towerId,
     node.id,
     game.powerEdges,
@@ -41,15 +40,10 @@ function handleNodeClick(game: Game, node: Node, isRightClick: boolean) {
   if (!pathExists) return;
 
   if (isRightClick && node.currentEnergy > 0) {
-    node.currentEnergy--;
-    player.energyDraining--;
+    game.tryDecreaseNodeEnergy(node.id);
   } else if (!isRightClick && player.energy > 0) {
-    node.currentEnergy++;
-    player.energyDraining++;
-    node.owner = game.currentPlayer;
+    game.tryIncreaseNodeEnergy(node.id);
   }
-
-  updatePowerFlow(game.nodes, game.powerEdges, game.players);
 }
 
 export function handleClick(
@@ -120,17 +114,8 @@ function handleDragConnection(game: Game, from: Node, to: Node) {
       player.energy -= cost;
     }
   } else {
-    game.powerEdges.push({
-      from: from.id,
-      to: to.id,
-      capacity,
-      currentFlow: 0,
-      owner: game.currentPlayer,
-    });
-    player.energy -= cost;
+    game.tryConstructEdge(from.id, to.id, game.currentPlayer, capacity, cost);
   }
-
-  updatePowerFlow(game.nodes, game.powerEdges, game.players);
 }
 
 export function handleMouseUp(e: MouseEvent, game: Game | null) {
