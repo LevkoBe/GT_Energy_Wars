@@ -130,6 +130,7 @@ export class Game implements GameState {
   }
 
   performSabotage(node: Node): void {
+    node.owner = null;
     const connected = this.powerEdges.filter(
       (edge) => edge.from === node.id || edge.to === node.id
     );
@@ -248,7 +249,21 @@ export class Game implements GameState {
         toNode.currentEnergy = 0;
         this.createEdge(fromId, toId, playerId, capacity);
         player.energy -= cost;
+
+        const disconnected = this.findDisconnectedNodesAfterNodeLoss(
+          toNode.id,
+          oldOwner
+        );
+        disconnected.forEach((nodeId) => {
+          const node = this.nodes[nodeId];
+          node.owner = null;
+          node.currentEnergy = 0;
+        });
+
+        this.recalculateAllFlows(oldOwner);
+        this.recalculateAllFlows(playerId);
         this.updatePlayerStats();
+
         return true;
       }
     }
@@ -273,6 +288,48 @@ export class Game implements GameState {
   }
 
   // Helpers
+  private findDisconnectedNodesAfterNodeLoss(
+    lostNodeId: number,
+    playerId: number
+  ): number[] {
+    const tower = this.findPlayerTower(playerId);
+    if (!tower) return [];
+
+    const remainingEdges = this.powerEdges.filter((e) => e.owner === playerId);
+
+    const visited = new Set<number>();
+    const queue = [tower.id];
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      visited.add(current);
+
+      for (const edge of remainingEdges) {
+        if (
+          edge.from === current &&
+          edge.to !== lostNodeId &&
+          !visited.has(edge.to)
+        ) {
+          queue.push(edge.to);
+        } else if (
+          edge.to === current &&
+          edge.from !== lostNodeId &&
+          !visited.has(edge.from)
+        ) {
+          queue.push(edge.from);
+        }
+      }
+    }
+
+    return this.nodes
+      .map((node, id) => ({ node, id }))
+      .filter(
+        ({ node, id }) =>
+          node.owner === playerId && !node.isEnergyTower && !visited.has(id)
+      )
+      .map(({ id }) => id);
+  }
+
   private findPlayerTower(playerId: number): Node | null {
     return (
       this.nodes.find((n) => n.isEnergyTower && n.owner === playerId) || null
