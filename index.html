@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>City Power Grid Game</title>
+    <script type="module" crossorigin src="/GT_Energy_Wars/assets/index-CIbiKDno.js"></script>
+    <link rel="stylesheet" crossorigin href="/GT_Energy_Wars/assets/index-CDyGvltW.css">
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="sidebar">
+        <div class="game-status" id="gameStatus">Turn 1 - Player 1</div>
+
+        <div id="playersContainer"></div>
+
+        <div class="controls">
+          <button id="endTurnBtn">End Turn</button>
+          <button id="newGameBtn">New Game</button>
+        </div>
+
+        <div id="nodeInfo">
+          <div class="node-info">Click a node for details</div>
+        </div>
+
+        <div class="instructions">
+          <strong>How to Play:</strong><br />
+          • Click nodes to supply energy (costs energy)<br />
+          • Right-click to withdraw energy<br />
+          • Drag between nodes to build power lines<br />
+          • Click enemy power lines to destroy them (costs 10 energy)<br />
+          • Satisfy node needs to gain influence<br />
+          • First to 60% influence wins!
+        </div>
+      </div>
+
+      <div class="game-area">
+        <canvas id="gameCanvas"></canvas>
+      </div>
+    </div>
+
+    <div id="victoryModal" class="victory-modal">
+      <div class="victory-content">
+        <div id="victoryText">Player Wins!</div>
+        <button id="anewGameBtn">Play Again</button>
+      </div>
+    </div>
+  </body>
+</html>
