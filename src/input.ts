@@ -1,5 +1,5 @@
 import { updateUI } from "./ui.js";
-import { draw, getNodeAt, getPowerlineAt } from "./rendering.js";
+import { draw, getNodeAt } from "./rendering.js";
 import { distance, findPath } from "./algorithms.js";
 import { updatePowerFlow } from "./energy-flow.js";
 import {
@@ -88,25 +88,19 @@ export function handleMouseMove(e: MouseEvent, game: Game | null) {
   game.mouseY = y;
 
   const hoveredNode = getNodeAt(x, y, game);
-  const hoveredPowerline = getPowerlineAt(x, y, game);
-  const hasHover = hoveredNode || hoveredPowerline;
   const hadHover = game.lastHoveredNode || game.lastHoveredPowerline;
 
   game.lastHoveredNode = hoveredNode;
-  game.lastHoveredPowerline = hoveredPowerline;
 
   if (hoveredNode) {
     game.canvas.style.cursor = "pointer";
-  } else if (hoveredPowerline) {
-    game.canvas.style.cursor =
-      hoveredPowerline.owner !== game.currentPlayer ? "crosshair" : "default";
   } else if (game.dragStart) {
     game.canvas.style.cursor = "grabbing";
   } else {
     game.canvas.style.cursor = "default";
   }
 
-  if (game.dragStart || hasHover || hadHover) draw(game);
+  if (game.dragStart || hoveredNode || hadHover) draw(game);
 }
 
 function handleDragConnection(game: Game, from: Node, to: Node) {

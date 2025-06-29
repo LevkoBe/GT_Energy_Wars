@@ -1,23 +1,8 @@
-import { distance, distanceToLineSegment } from "./algorithms.js";
-import { Node, PowerEdge, GameState } from "./types.js";
+import { distance } from "./algorithms.js";
+import { Node, GameState } from "./types.js";
 
 export const getNodeAt = (x: number, y: number, game: GameState): Node | null =>
   game.nodes.find((node) => distance({ x, y }, node) < 25) || null;
-
-export const getPowerlineAt = (
-  x: number,
-  y: number,
-  game: GameState
-): PowerEdge | null => {
-  return (
-    game.powerEdges.find((edge) => {
-      const nodeA = game.nodes[edge.from];
-      const nodeB = game.nodes[edge.to];
-      const distToLine = distanceToLineSegment({ x, y }, nodeA, nodeB);
-      return distToLine < 10;
-    }) || null
-  );
-};
 
 const drawSocialConnections = (
   ctx: CanvasRenderingContext2D,
