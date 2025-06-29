@@ -28,6 +28,7 @@ export interface Player {
   towerId: number;
   energyDraining: number;
   energyGenerated: number;
+  nodesSuppliedTo: number[];
 }
 
 export interface GameState {
