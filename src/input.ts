@@ -49,7 +49,7 @@ function handleNodeClick(game: Game, node: Node, isRightClick: boolean) {
     node.owner = game.currentPlayer;
   }
 
-  updatePowerFlow(game.nodes, game.powerEdges);
+  updatePowerFlow(game.nodes, game.powerEdges, game.players);
 }
 
 export function handleClick(
@@ -136,7 +136,7 @@ function handleDragConnection(game: Game, from: Node, to: Node) {
     player.energy -= cost;
   }
 
-  updatePowerFlow(game.nodes, game.powerEdges);
+  updatePowerFlow(game.nodes, game.powerEdges, game.players);
 }
 
 export function handleMouseUp(e: MouseEvent, game: Game | null) {

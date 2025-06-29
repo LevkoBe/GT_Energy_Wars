@@ -10,8 +10,6 @@ export interface Node extends Point {
   owner: number | null;
   isEnergyTower: boolean;
   socialConnections: number[];
-  width: number;
-  height: number;
 }
 
 export interface PowerEdge {
