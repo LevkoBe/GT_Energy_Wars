@@ -1,8 +1,8 @@
 export const PADDING: number = 100;
 export const MIN_NODE_DISTANCE: number = 60;
 
-export const NUM_PLAYERS: number = 3;
-export const NUM_NODES: number = 25;
+export const NUM_PLAYERS: number = Math.floor(Math.random() * 3) + 3;
+export const NUM_NODES: number = Math.floor(Math.random() * 25) + 25;
 export const SOCIAL_CONNECTION_CHANCE: number = 0.3;
 
 export const INITIAL_PLAYER_ENERGY: number = 50;
