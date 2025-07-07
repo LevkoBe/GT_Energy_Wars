@@ -11,7 +11,7 @@ import {
   generateInitialPowerlines,
 } from "./generation.js";
 import { canvas } from "./index.js";
-import { renderPlayerUI, updateUI } from "./ui.js";
+import { renderPlayerUI, showVictory, updateUI } from "./ui.js";
 import { draw } from "./rendering.js";
 import { BFSfindPath } from "./algorithms.js";
 import type { Player, Node, PowerEdge, GameState } from "./types.js";
@@ -80,6 +80,7 @@ export class Game implements GameState {
         ))
     );
 
+    this.checkVictoryCondition();
     updateUI(this);
     draw(this);
   }
@@ -559,5 +560,26 @@ export class Game implements GameState {
     );
 
     this.init();
+  }
+
+  private checkVictoryCondition(): void {
+    const totalNodes = this.nodes.length;
+    const influenceThreshold = totalNodes * 0.6;
+
+    const playerInfluence = Array(NUM_PLAYERS).fill(0);
+
+    for (const node of this.nodes) {
+      if (node.owner !== null && node.owner >= 0 && node.owner < NUM_PLAYERS) {
+        playerInfluence[node.owner]++;
+      }
+    }
+
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      if (playerInfluence[i] >= influenceThreshold) {
+        this.gameOver = true;
+        showVictory(i);
+        return;
+      }
+    }
   }
 }
