@@ -1,7 +1,7 @@
 import {
   distance,
   kruskalsMST,
-  greedyClusterAssignment,
+  balancedClusterAssignment,
 } from "./algorithms.js";
 import {
   NUM_PLAYERS,
@@ -79,7 +79,7 @@ const assignClusters = (
   allNodes: Node[]
 ) => {
   const balanceConstraint = createBalanceConstraint(allNodes);
-  const assignments = greedyClusterAssignment(
+  const assignments = balancedClusterAssignment(
     nonTowerNodes,
     towers,
     balanceConstraint
@@ -94,13 +94,19 @@ const assignClusters = (
 
 const createBalanceConstraint = (nodes: Node[]) => {
   const targetSum = Math.ceil(
-    nodes.reduce((sum, n) => sum + n.socialConnections.length, 0) / NUM_PLAYERS
+    nodes.reduce(
+      (sum, n) => sum + n.socialConnections.reduce((a, b) => a + b, 0),
+      0
+    ) / NUM_PLAYERS
   );
 
   return (clusterId: number, node: Node) => {
     const currentSum = nodes
       .filter((n) => n.owner === clusterId)
-      .reduce((sum, n) => sum + n.socialConnections.length, 0);
+      .reduce(
+        (sum, n) => sum + n.socialConnections.reduce((a, b) => a + b, 0),
+        0
+      );
 
     return (
       currentSum + node.socialConnections.length <=

@@ -1,6 +1,7 @@
-import { Node, PowerEdge } from "./types.js";
+import { CLUSTER_BALANCE_TOLERANCE } from "./config.js";
+import { Node, Point, PowerEdge } from "./types.js";
 
-export const distance = (a: Node, b: Node): number =>
+export const distance = (a: Point, b: Point): number =>
   Math.hypot(a.x - b.x, a.y - b.y);
 
 export const BFSfindPath = (
@@ -111,3 +112,73 @@ export const greedyClusterAssignment = (
         { index: 0, score: Infinity }
       ).index
   );
+
+export const balancedClusterAssignment = (
+  nodes: Node[],
+  centers: Node[],
+  isValid: (clusterId: number, node: Node) => boolean
+): number[] => {
+  const assignment = greedyClusterAssignment(nodes, centers, isValid);
+
+  const grouped: Node[][] = Array(centers.length)
+    .fill(null)
+    .map(() => []);
+  assignment.forEach((clusterId, i) => {
+    grouped[clusterId].push(nodes[i]);
+  });
+
+  const totalWeight = nodes.reduce(
+    (sum, n) => sum + n.socialConnections.reduce((a, b) => a + b, 0),
+    0
+  );
+  const targetWeight = totalWeight / centers.length;
+
+  for (let round = 0; round < 10; round++) {
+    const weights = grouped.map((group) =>
+      group.reduce(
+        (sum, n) => sum + n.socialConnections.reduce((a, b) => a + b, 0),
+        0
+      )
+    );
+
+    const overweightId = weights.findIndex(
+      (w) => w > targetWeight * (1 + CLUSTER_BALANCE_TOLERANCE)
+    );
+    const underweightId = weights.findIndex(
+      (w) => w < targetWeight * (1 - CLUSTER_BALANCE_TOLERANCE)
+    );
+
+    if (overweightId === -1 || underweightId === -1) break;
+
+    const overweightCenter = centers[overweightId];
+    const underweightCenter = centers[underweightId];
+
+    const candidates = grouped[overweightId]
+      .filter((n) => isValid(underweightId, n))
+      .map((node) => {
+        const weight = node.socialConnections.reduce((a, b) => a + b, 0);
+        const oldDistance = distance(node, overweightCenter);
+        const newDistance = distance(node, underweightCenter);
+        const distanceDiff = newDistance - oldDistance;
+
+        return { node, weight, distanceDiff };
+      })
+      .sort((a, b) =>
+        a.distanceDiff !== b.distanceDiff
+          ? a.distanceDiff - b.distanceDiff
+          : a.weight - b.weight
+      );
+
+    if (candidates.length === 0) break;
+
+    const chosen = candidates[0].node;
+
+    grouped[overweightId] = grouped[overweightId].filter((n) => n !== chosen);
+    grouped[underweightId].push(chosen);
+
+    const nodeIndex = nodes.indexOf(chosen);
+    assignment[nodeIndex] = underweightId;
+  }
+
+  return assignment;
+};
