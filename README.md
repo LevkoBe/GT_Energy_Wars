@@ -5,7 +5,20 @@
 **Live Demo:** https://levkobe.github.io/GT_Energy_Wars/
 
 > This project explores the application of graph theory through a web-based strategy game I developed, *GT: Energy Wars*. Rather than analyzing an existing game on graphs, I chose to build my own from scratch to better integrate specific algorithms and structures from the course. The result is a playable demonstration of concepts such as minimum spanning trees, network connectivity, simplified flow models, and social influence propagation, framed in a scenario where energy companies compete to supply a city via graph-based infrastructure.
-> 
+>
+
+**Navigation**
+- [Multi-Layered Graph Representation](#multi-layered-graph-representation)
+- [Key Graph Algorithms](#key-graph-algorithms)
+  - [Kruskal](#kruskals-algorithm-for-initialization)
+  - [Union-Find](#union-find-for-cycle-detection)
+  - [BFS](#bfs-for-connectivity)
+  - [Comparison](#overview-algorithm-comparison)
+- [Simplified Power Flow](#modeling-simplified-power-flow)
+- [House Behavior & Sabotage](#house-behavior-and-sabotage)
+- [Performance Trade-offs](#performance-and-practical-trade-offs)
+- [Future Work](#future-work)
+- [Conclusion](#conclusion)
 
 ## Multi-Layered Graph Representation
 
